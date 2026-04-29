@@ -8,6 +8,7 @@ import SchoolDetail from './pages/SchoolDetail';
 import Receipts from './pages/Receipts';
 import Revenue from './pages/Revenue';
 import UsersPage from './pages/Users';
+import Devices from './pages/Devices';
 import Settings from './pages/Settings';
 
 function Layout({ user }) {
@@ -22,6 +23,7 @@ function Layout({ user }) {
                     <Route path="/receipts"     element={<Receipts />} />
                     <Route path="/revenue"      element={<Revenue />} />
                     <Route path="/users"        element={<UsersPage />} />
+                    <Route path="/devices"      element={<Devices />} />
                     <Route path="/settings"     element={<Settings />} />
                     <Route path="*"             element={<Navigate to="/" replace />} />
                 </Routes>

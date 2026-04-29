@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, School, Receipt, LogOut, TrendingUp, Users, Settings, Menu, X } from 'lucide-react';
+import { LayoutDashboard, School, Receipt, LogOut, TrendingUp, Users, Settings, Menu, X, Monitor } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 
@@ -9,6 +9,7 @@ const links = [
     { to: '/receipts', label: 'Receipts', Icon: Receipt },
     { to: '/revenue',  label: 'Revenue',  Icon: TrendingUp },
     { to: '/users',    label: 'Users',    Icon: Users },
+    { to: '/devices',  label: 'Devices',  Icon: Monitor },
     { to: '/settings', label: 'Settings', Icon: Settings },
 ];
 
