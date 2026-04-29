@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#040e20"/>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0a1a30"/>
+      <stop offset="100%" stop-color="#040e20"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3a82cc"/>
+      <stop offset="100%" stop-color="#2d6fb5"/>
+    </linearGradient>
+  </defs>
+  <!-- S -->
+  <text x="7" y="44" font-family="'Segoe UI',Arial,sans-serif" font-weight="800" font-size="34" fill="url(#accent)">S</text>
+  <!-- D -->
+  <text x="32" y="44" font-family="'Segoe UI',Arial,sans-serif" font-weight="800" font-size="34" fill="#11b37f">D</text>
+  <!-- bottom bar -->
+  <rect x="8" y="50" width="48" height="3" rx="1.5" fill="#2d6fb5" opacity="0.5"/>
+</svg>
