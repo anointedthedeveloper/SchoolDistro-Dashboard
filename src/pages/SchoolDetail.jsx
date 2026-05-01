@@ -177,6 +177,7 @@ export default function SchoolDetail() {
 
     const subState      = getSubscriptionState(school);
     const usedSlots     = schoolUsers.length;
+    const totalSlots    = 10; // max users per school
     const activeDevices = activations.length;
 
     return (
