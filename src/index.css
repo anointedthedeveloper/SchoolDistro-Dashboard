@@ -418,6 +418,21 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
 .login-card .btn-primary { width: 100%; margin-top: 4px; padding: 11px; font-size: 0.9rem; }
 
+/* ── Device specs expand row ── */
+.device-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+.spec-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+.spec-row strong { color: var(--text-primary); }
+
 /* ── Icon button helpers ── */
 .btn-primary, .btn-secondary, .btn-danger {
     display: inline-flex;
@@ -821,4 +836,62 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     height: 100%;
     border-radius: 4px;
     transition: width 0.3s ease;
+}
+
+/* ── WhatsNew Modal ── */
+.whats-new-modal { width: min(94vw, 440px); }
+
+.whats-new-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 4px 0 16px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.whats-new-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.whats-new-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.whats-new-text { color: var(--text-primary); }
+
+/* ── Update progress ── */
+.update-progress-wrap {
+    background: rgba(45,111,181,0.07);
+    border: 1px solid rgba(45,111,181,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 4px;
+}
+
+.update-progress-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.update-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2d6fb5, #11b37f);
+    border-radius: 4px;
+    transition: width 0.2s ease;
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Pencil, Trash2, School, RefreshCw, KeyRound, Eye, PauseCircle, PlayCircle, CreditCard, Clock, Users } from 'lucide-react';
+import { Plus, Pencil, Trash2, School, RefreshCw, KeyRound, Eye, PauseCircle, PlayCircle, CreditCard, Clock, Users, Copy, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { getSubscriptionState, autoExpireSchools } from '../utils/subscription';
@@ -40,6 +40,13 @@ export default function Schools() {
     const [error, setError]       = useState('');
     const [search, setSearch]     = useState('');
     const [deleteId, setDeleteId] = useState(null);
+    const [copiedKey, setCopiedKey] = useState(null);
+
+    function copyKey(key) {
+        navigator.clipboard.writeText(key);
+        setCopiedKey(key);
+        setTimeout(() => setCopiedKey(null), 2000);
+    }
 
     // Plans state
     const [planModal, setPlanModal]   = useState(null);
@@ -209,8 +216,20 @@ export default function Schools() {
                                         return (
                                             <tr key={s.id}>
                                                 <td>
-                                                    <strong>{s.name}</strong><br />
-                                                    <code className="license-code" style={{ fontSize: '0.7rem' }}>{s.license_key}</code>
+                                                    <div style={{ fontWeight: 700, marginBottom: 4 }}>{s.name}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                        <code className="license-code" style={{ fontSize: '0.68rem' }}>{s.license_key}</code>
+                                                        <button
+                                                            className="btn-icon"
+                                                            style={{ padding: '2px 5px' }}
+                                                            onClick={() => copyKey(s.license_key)}
+                                                            title="Copy license key"
+                                                        >
+                                                            {copiedKey === s.license_key
+                                                                ? <Check size={11} color="#11b37f" />
+                                                                : <Copy size={11} />}
+                                                        </button>
+                                                    </div>
                                                 </td>
                                                 <td style={{ color: 'var(--text-secondary)' }}>{s.email || '—'}</td>
                                                 <td><span className="badge" style={{ background: pc + '22', color: pc }}>{s.plan || '—'}</span></td>
@@ -271,52 +290,109 @@ export default function Schools() {
             {/* ── School Modal ── */}
             {modal && (
                 <div className="modal-overlay" onClick={() => setModal(null)}>
-                    <div className="modal" style={{ width: 'min(94vw, 500px)' }} onClick={e => e.stopPropagation()}>
+                    <div className="modal" style={{ width: 'min(94vw, 520px)', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>{modal === 'add' ? 'Add School' : 'Edit Subscription'}</h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg,#1e3f6e,#2d6fb5)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <School size={16} color="#7ab3e8" />
+                                </div>
+                                <div>
+                                    <h3 style={{ fontSize: '0.95rem' }}>{modal === 'add' ? 'Register New School' : 'Edit School'}</h3>
+                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: 1 }}>
+                                        {modal === 'add' ? 'Fill in school details and assign a plan' : 'Update subscription or school info'}
+                                    </p>
+                                </div>
+                            </div>
                             <button className="modal-close" onClick={() => setModal(null)}>✕</button>
                         </div>
+
                         <form onSubmit={handleSave}>
-                            <div className="field"><label>School Name</label><input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required placeholder="Peter Harvard International" /></div>
-                            <div className="field"><label>Email / Contact</label><input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="admin@school.edu" /></div>
-                            <div className="field">
-                                <label>Subscription Plan</label>
-                                <select value={form.plan_id} onChange={e => handlePlanChange(e.target.value)} required>
-                                    <option value="">— Select a plan —</option>
-                                    {activePlans.map(p => <option key={p.id} value={p.id}>{p.label} — {p.price === 0 ? 'Free' : `₦${Number(p.price).toLocaleString()}`} / {p.duration_days}d / {p.max_users === -1 ? 'Unlimited' : p.max_users + ' users'}</option>)}
-                                </select>
-                            </div>
-                            {selectedPlan && (
-                                <div className="plan-preview">
-                                    <div className="plan-preview-name">{selectedPlan.label}</div>
-                                    <div className="plan-preview-meta">
-                                        <span>₦{Number(selectedPlan.price).toLocaleString()}</span>
-                                        <span>{selectedPlan.duration_days} days</span>
-                                        <span>{selectedPlan.max_users === -1 ? 'Unlimited users' : `${selectedPlan.max_users} users`}</span>
+                            {/* Section: School Info */}
+                            <div style={{ marginBottom: 18 }}>
+                                <div style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-secondary)', marginBottom: 10, paddingBottom: 6, borderBottom: '1px solid var(--border-color)' }}>School Information</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                                    <div className="field" style={{ gridColumn: '1/-1' }}>
+                                        <label>School Name</label>
+                                        <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required placeholder="e.g. Peter Harvard International" />
+                                    </div>
+                                    <div className="field" style={{ gridColumn: '1/-1' }}>
+                                        <label>Email / Contact</label>
+                                        <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="admin@school.edu" />
                                     </div>
                                 </div>
-                            )}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                                <div className="field"><label>Start Date</label><input type="date" value={form.start_date} onChange={e => handleStartDateChange(e.target.value)} required /></div>
-                                <div className="field"><label>Expiry <span className="optional">(auto)</span></label><input type="date" value={form.expires_at} onChange={e => setForm(f => ({ ...f, expires_at: e.target.value }))} style={{ background: 'rgba(45,111,181,0.07)', color: 'var(--accent-hover)' }} /></div>
                             </div>
-                            <div className="field">
-                                <label>Status</label>
-                                <select value={form.subscription_status} onChange={e => setForm(f => ({ ...f, subscription_status: e.target.value }))}>
-                                    <option value="trial">Trial</option><option value="active">Active</option><option value="expired">Expired</option><option value="suspended">Suspended</option>
-                                </select>
-                            </div>
-                            <div className="field">
-                                <label>License Key</label>
-                                <div className="input-row">
-                                    <input value={form.license_key} onChange={e => setForm(f => ({ ...f, license_key: e.target.value }))} required placeholder="SD-BASIC-2026-XXXX" />
-                                    <button type="button" className="btn-secondary btn-sm" onClick={() => setForm(f => ({ ...f, license_key: generateKey(selectedPlan?.name || f.plan_name) }))}><KeyRound size={13} /> Regen</button>
+
+                            {/* Section: Subscription */}
+                            <div style={{ marginBottom: 18 }}>
+                                <div style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-secondary)', marginBottom: 10, paddingBottom: 6, borderBottom: '1px solid var(--border-color)' }}>Subscription</div>
+
+                                <div className="field">
+                                    <label>Plan</label>
+                                    <select value={form.plan_id} onChange={e => handlePlanChange(e.target.value)} required>
+                                        <option value="">— Select a plan —</option>
+                                        {activePlans.map(p => (
+                                            <option key={p.id} value={p.id}>
+                                                {p.label} — {p.price === 0 ? 'Free' : `₦${Number(p.price).toLocaleString()}`} / {p.duration_days}d
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {selectedPlan && (
+                                    <div style={{ display: 'flex', gap: 8, marginBottom: 12, padding: '8px 12px', background: 'rgba(45,111,181,0.07)', border: '1px solid rgba(45,111,181,0.15)', borderRadius: 9 }}>
+                                        <div style={{ flex: 1, fontSize: '0.78rem' }}>
+                                            <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{selectedPlan.label}</span>
+                                            <span style={{ color: 'var(--text-secondary)', marginLeft: 8 }}>₦{Number(selectedPlan.price).toLocaleString()}</span>
+                                        </div>
+                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{selectedPlan.duration_days} days</span>
+                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{selectedPlan.max_users === -1 ? 'Unlimited users' : `${selectedPlan.max_users} users`}</span>
+                                    </div>
+                                )}
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                                    <div className="field">
+                                        <label>Start Date</label>
+                                        <input type="date" value={form.start_date} onChange={e => handleStartDateChange(e.target.value)} required />
+                                    </div>
+                                    <div className="field">
+                                        <label>Expiry <span className="optional">(auto-calculated)</span></label>
+                                        <input type="date" value={form.expires_at} onChange={e => setForm(f => ({ ...f, expires_at: e.target.value }))} style={{ background: 'rgba(45,111,181,0.06)', color: 'var(--accent-hover)' }} />
+                                    </div>
+                                    <div className="field">
+                                        <label>Status</label>
+                                        <select value={form.subscription_status} onChange={e => setForm(f => ({ ...f, subscription_status: e.target.value }))}>
+                                            <option value="trial">Trial</option>
+                                            <option value="active">Active</option>
+                                            <option value="expired">Expired</option>
+                                            <option value="suspended">Suspended</option>
+                                        </select>
+                                    </div>
+                                    <div className="field">
+                                        <label>License Key</label>
+                                        <div className="input-row">
+                                            <input
+                                                value={form.license_key}
+                                                onChange={e => setForm(f => ({ ...f, license_key: e.target.value }))}
+                                                required placeholder="SD-XXXX-XXXX-XXXX"
+                                                style={{ fontFamily: 'monospace', fontSize: '0.8rem', letterSpacing: '0.04em' }}
+                                            />
+                                            <button type="button" className="btn-icon" title="Copy" onClick={() => { navigator.clipboard.writeText(form.license_key); }}>
+                                                <Copy size={13} />
+                                            </button>
+                                            <button type="button" className="btn-icon" title="Regenerate" onClick={() => setForm(f => ({ ...f, license_key: generateKey(selectedPlan?.name || f.plan_name) }))}>
+                                                <KeyRound size={13} />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
                             {error && <div className="error-msg">{error}</div>}
                             <div className="modal-footer">
                                 <button type="button" className="btn-secondary" onClick={() => setModal(null)}>Cancel</button>
-                                <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+                                <button type="submit" className="btn-primary" disabled={saving}>
+                                    {saving ? 'Saving…' : modal === 'add' ? <><Plus size={14} /> Register School</> : 'Save Changes'}
+                                </button>
                             </div>
                         </form>
                     </div>

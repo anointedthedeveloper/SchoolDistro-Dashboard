@@ -9,8 +9,9 @@ export default function Revenue() {
     const [unpaid, setUnpaid]     = useState(0);
     const [bySchool, setBySchool] = useState([]);
     const [monthly, setMonthly]   = useState([]);
-    const [payments, setPayments] = useState([]);
-    const [loading, setLoading]   = useState(true);
+    const [payments, setPayments]   = useState([]);
+    const [schoolMap, setSchoolMap] = useState({});
+    const [loading, setLoading]     = useState(true);
 
     useEffect(() => {
         async function load() {
@@ -21,6 +22,7 @@ export default function Revenue() {
 
             const all = pays || [];
             const schoolMap = Object.fromEntries((schools || []).map(s => [s.id, s.name]));
+            setSchoolMap(schoolMap);
 
             const totalRev  = all.reduce((s, p) => s + Number(p.amount || 0), 0);
             const paidRev   = all.filter(p => p.status === 'paid').reduce((s, p) => s + Number(p.amount || 0), 0);
@@ -162,7 +164,7 @@ export default function Revenue() {
                                 <tbody>
                                     {payments.map(p => (
                                         <tr key={p.id}>
-                                            <td><strong>{p.school_id}</strong></td>
+                                            <td><strong>{schoolMap[p.school_id] || p.school_id}</strong></td>
                                             <td>{p.plans?.label || '—'}</td>
                                             <td style={{ fontWeight: 700 }}>₦{Number(p.amount).toLocaleString()}</td>
                                             <td>

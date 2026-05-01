@@ -11,6 +11,8 @@ import UsersPage from './pages/Users';
 import Devices from './pages/Devices';
 import Settings from './pages/Settings';
 
+import Developer from './pages/Developer';
+
 function Layout({ user }) {
     return (
         <div className="app-layout">
@@ -25,6 +27,7 @@ function Layout({ user }) {
                     <Route path="/users"        element={<UsersPage />} />
                     <Route path="/devices"      element={<Devices />} />
                     <Route path="/settings"     element={<Settings />} />
+                    <Route path="/developer"    element={<Developer />} />
                     <Route path="*"             element={<Navigate to="/" replace />} />
                 </Routes>
             </main>
