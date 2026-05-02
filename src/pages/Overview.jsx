@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { School, CheckCircle, XCircle, Receipt, Banknote, TrendingUp, AlertTriangle, Clock } from 'lucide-react';
+import { School, CheckCircle, XCircle, Receipt, Banknote, TrendingUp, AlertTriangle, Clock, Monitor } from 'lucide-react';
 import { supabase } from '../supabase';
 import { getSubscriptionState, autoExpireSchools } from '../utils/subscription';
 
@@ -18,12 +18,13 @@ export default function Overview() {
             // Auto-expire before loading
             await autoExpireSchools(supabase);
 
-            const [{ data: schools }, { count: receipts }, { data: recentReceipts }, { data: allPayments }] = await Promise.all([
+            const [{ data: schools }, { count: receipts }, { data: recentReceipts }, { data: allPayments }, { count: activeActivations }] = await Promise.all([
                 supabase.from('schools').select('id, name, subscription_status, expires_at, is_active, created_at'),
                 supabase.from('receipts').select('*', { count: 'exact', head: true }),
                 supabase.from('receipts').select('serial_number, parent_name, amount, bank, synced_at, school_id')
                     .order('synced_at', { ascending: false }).limit(6),
                 supabase.from('payments').select('amount').eq('status', 'paid'),
+                supabase.from('activations').select('*', { count: 'exact', head: true }).eq('is_active', true),
             ]);
 
             const s = schools || [];
@@ -36,6 +37,7 @@ export default function Overview() {
                 receipts:     receipts || 0,
                 revenue,
                 newThisMonth: s.filter(x => new Date(x.created_at) >= thisMonth).length,
+                activeActivations: activeActivations || 0,
             });
 
             setAlerts({
@@ -59,6 +61,7 @@ export default function Overview() {
     const cards = [
         { label: 'Total Schools',  value: stats.schools,                        Icon: School,      color: '#2d6fb5' },
         { label: 'Active',         value: stats.active,                         Icon: CheckCircle, color: '#11b37f' },
+        { label: 'Active Device Activations', value: stats.activeActivations,   Icon: Monitor,     color: '#10b981' },
         { label: 'Expired',        value: stats.expired,                        Icon: XCircle,     color: '#ef4444' },
         { label: 'Total Revenue',  value: `₦${stats.revenue.toLocaleString()}`, Icon: Banknote,    color: '#06b6d4' },
         { label: 'New This Month', value: `+${stats.newThisMonth}`,             Icon: TrendingUp,  color: '#f59e0b' },

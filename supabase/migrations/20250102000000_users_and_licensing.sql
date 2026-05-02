@@ -35,11 +35,17 @@ create table if not exists license_activations (
     device_id    text not null,           -- unique hardware/install ID from desktop app
     activated_at timestamptz default now(),
     last_seen    timestamptz default now(),
+    is_active    boolean not null default true,
     unique (school_id, device_id)         -- one activation per device per school
 );
 
 alter table license_activations disable row level security;
 grant select, insert, update, delete on license_activations to anon, authenticated;
+
+-- Create view for easier querying
+create or replace view activations as select * from license_activations;
+
+grant select, insert, update, delete on activations to anon, authenticated;
 
 -- ── 3. License verification function ────────────────────────
 -- Called by the desktop app on first launch:
@@ -181,4 +187,4 @@ grant execute on function verify_school_user(text, text) to anon;
 -- Reload schema cache
 notify pgrst, 'reload schema';
 
-select 'Done — school_users, license_activations, verify_license(), verify_school_user() created.' as status;
+select 'Done — school_users, license_activations, activations view, verify_license(), verify_school_user() created.' as status;
