@@ -84,7 +84,7 @@ export default function SchoolDetail() {
         setUsersLoading(true);
         const [{ data: u }, { data: a }] = await Promise.all([
             supabase.from('school_users').select('*').eq('school_id', id).order('created_at'),
-            supabase.from('license_activations').select('*').eq('school_id', id).order('last_seen', { ascending: false }),
+            supabase.from('license_activations').select('*').eq('school_id', id).order('activated_at', { ascending: false }),
         ]);
         setSchoolUsers(u || []);
         setActivations(a || []);
@@ -358,8 +358,8 @@ export default function SchoolDetail() {
                                     {activations.map(a => (
                                         <tr key={a.id}>
                                             <td><code className="license-code" style={{ fontSize: '0.75rem' }}>{a.device_id}</code></td>
-                                            <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{new Date(a.created_at).toLocaleString()}</td>
-                                            <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{a.last_seen ? new Date(a.last_seen).toLocaleString() : '—'}</td>
+                                            <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{new Date(a.activated_at).toLocaleString()}</td>
+                                            <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{a.last_seen ? new Date(a.last_seen).toLocaleString() : new Date(a.activated_at).toLocaleString()}</td>
                                             <td className="actions">
                                                 <button className="btn-icon danger" onClick={() => revokeActivation(a.id)} title="Revoke"><Trash2 size={13} /></button>
                                             </td>
