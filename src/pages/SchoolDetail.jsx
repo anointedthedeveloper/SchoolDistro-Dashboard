@@ -84,7 +84,7 @@ export default function SchoolDetail() {
         setUsersLoading(true);
         const [{ data: u }, { data: a }] = await Promise.all([
             supabase.from('school_users').select('*').eq('school_id', id).order('created_at'),
-            supabase.from('activations').select('*').eq('school_id', id).order('last_seen', { ascending: false }),
+            supabase.from('license_activations').select('*').eq('school_id', id).order('last_seen', { ascending: false }),
         ]);
         setSchoolUsers(u || []);
         setActivations(a || []);
@@ -177,7 +177,8 @@ export default function SchoolDetail() {
 
     const subState      = getSubscriptionState(school);
     const usedSlots     = schoolUsers.length;
-    const totalSlots    = 10; // max users per school
+    const maxUsers      = school.max_users === -1 ? Infinity : (school.max_users || 3);
+    const totalSlots    = maxUsers === Infinity ? '∞' : maxUsers;
     const activeDevices = activations.length;
 
     return (
